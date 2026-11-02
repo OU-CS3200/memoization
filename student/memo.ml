@@ -2,8 +2,8 @@
    Memoization, Part B — The combinators (25 pts)
 
    Fill in your name and Ohio ID: *)
-let student_name = "YOUR NAME"
-let student_id = "YOUR OHIO ID"
+let student_name = "Jt Hepke"
+let student_id = "jh639423@ohio.edu"
 
 (* Part A memoized two particular functions. Here you write the cache
    ONCE, as a higher-order function, and get memoization for any function
