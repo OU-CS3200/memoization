@@ -1,0 +1,5 @@
+(test
+ (name test_memo)
+ (deps
+  (glob_files %{project_root}/student/*.ml))
+ (libraries unix alcotest memo_student))

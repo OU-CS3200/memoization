@@ -1,0 +1,4 @@
+(library
+ (name memo_student)
+ (modules util handmemo memo dp)
+ (wrapped false))
