@@ -47,13 +47,13 @@ let memo (f : 'a -> 'b) : 'a -> 'b =
     Part D question.) *)
 let memo_rec (step : ('a -> 'b) -> 'a -> 'b) : 'a -> 'b =
   let table = Hashtbl.create 16 in (*empty table*)
-  let rec l (x : 'a) : 'b = (*mem function that cal recursive call*)
+  let rec self (x : 'a) : 'b = (*mem function that cal recursive call*)
     match Hashtbl.find_opt table x with (*look if already answered*)
     | Some answer -> answer
-    | None -> let result = step l x in Hashtbl.replace table x result; (* run step and call recursivly answer in table*)
+    | None -> let result = step self x in Hashtbl.replace table x result; (* run step and call recursivly answer in table*)
     result (*answer*)
   in
-  l
+  self
 
 (* ---- Given: the same recursion with no cache, and a call counter --- *)
 

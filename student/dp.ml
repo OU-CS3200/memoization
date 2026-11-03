@@ -15,7 +15,6 @@
    compare, a substring is not. Part D asks you to measure that claim.
  ************************************************************************)
 
-open Util
 
 (** 5. (12 pts) Edit distance (Levenshtein): the fewest single-character
     insertions, deletions and substitutions that turn [a] into [b].
@@ -27,7 +26,16 @@ open Util
     [a.[i]] with [b.[j]], and take the best of the three edits (or of
     no edit at all, when the characters are equal). *)
 let edit_step (a : string) (b : string) (self : int * int -> int) ((i, j) : int * int) : int =
-  todo (a, b, self, i, j)
+  let la = String.length a in (*length of string a*)
+  let lb = String.length b in (*length of string b*)
+  if i >= la then lb - j (*a is used, add b*)
+  else if j >= lb then la - i (*b is used up so delete the rest of a*)
+  else if a.[i] = b.[j] then self (i + 1, j + 1) (*letters match *)
+  else 
+    let delete = self (i + 1, j ) in (*delete a's letter*)
+    let inset = self (i, j + 1 ) in (* add b's letter*)
+    let replace = self (i + 1, j + 1) in (*swap the letter*)
+    1 + min delete (min inset replace) (*pick the cheapest option*)
 
 let edit_distance (a : string) (b : string) : int = Memo.memo_rec (edit_step a b) (0, 0)
 
@@ -40,7 +48,13 @@ let edit_distance (a : string) (b : string) : int = Memo.memo_rec (edit_step a b
     [coins.(i)], [coins.(i+1)], ... There is exactly one way to make 0
     (use nothing). Either use coin [i] at least once, or never use it. *)
 let change_step (coins : int array) (self : int * int -> int) ((i, amount) : int * int) : int =
-  todo (coins, self, i, amount)
+  if amount = 0 then 1 (*nothing to use only one way*)
+  else if amount < 0 then 0 (*too far doesn't work*)
+  else if i >= Array.length coins then 0 (*no coins = no ways*)
+  else
+    let use_it = self (i, amount - coins.(i)) in (* use coin i once, and keep it the same*)
+    let skip_it = self (i + 1, amount) in (*move i to next coin*)
+    use_it + skip_it (*ways with it plus without*)
 
 let count_change (coins : int array) (amount : int) : int =
   Memo.memo_rec (change_step coins) (0, amount)
@@ -53,6 +67,12 @@ let count_change (coins : int array) (amount : int) : int =
     [lcs_step a b self (i, j)]: the same, for the suffixes starting at
     [i] and [j]. *)
 let lcs_step (a : string) (b : string) (self : int * int -> int) ((i, j) : int * int) : int =
-  todo (a, b, self, i, j)
+  let la = String.length a in (*length a *)
+  let lb = String.length b in (* length b*)
+  if i >= la || j >= lb then 0 (*nothing in common *)
+  else if a.[i] = b.[j] then 1 + self (i + 1, j + 1) (*letters match so count 1 and forward*)
+  else 
+    let skip_a = self (i + 1, j) in (*throws away a's letter*)
+    let skip_b = self (i, j + 1) in max skip_a skip_b (* throw away b lettter, then no match so keep the better option*)
 
 let lcs_length (a : string) (b : string) : int = Memo.memo_rec (lcs_step a b) (0, 0)
