@@ -15,7 +15,6 @@ let student_id = "jh639423@ohio.edu"
    around, instead of through, will show.
  ************************************************************************)
 
-open Util
 
 (** 3. (10 pts) [memo f] behaves like [f], but calls [f] at most once per
     distinct argument: the second [memo f x] answers from the cache.
@@ -27,7 +26,12 @@ open Util
 
     Each call [memo f] makes a new, empty cache. *)
 let memo (f : 'a -> 'b) : 'a -> 'b =
-  todo f
+  let table = Hashtbl.create 16 in (*empty table*)
+  fun (x : 'a) ->
+    match Hashtbl.find_opt table x with (*already solved? *)
+    | Some answer -> answer
+    | None -> let result = f x in Hashtbl.replace table x result; (* run function f one time, put answer in table for next time*)
+    result (*answer*)
 
 (** 4. (15 pts) [memo_rec step] is the memoized version of a recursive
     function written in "open recursion" style: [step] takes, as its
@@ -42,7 +46,14 @@ let memo (f : 'a -> 'b) : 'a -> 'b =
     computed once in total. (Why [memo fib_naive] is NOT enough is a
     Part D question.) *)
 let memo_rec (step : ('a -> 'b) -> 'a -> 'b) : 'a -> 'b =
-  todo step
+  let table = Hashtbl.create 16 in (*empty table*)
+  let rec l (x : 'a) : 'b = (*mem function that cal recursive call*)
+    match Hashtbl.find_opt table x with (*look if already answered*)
+    | Some answer -> answer
+    | None -> let result = step l x in Hashtbl.replace table x result; (* run step and call recursivly answer in table*)
+    result (*answer*)
+  in
+  l
 
 (* ---- Given: the same recursion with no cache, and a call counter --- *)
 
